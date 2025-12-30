@@ -1,0 +1,11 @@
+server:
+  host: localhost
+  port: 8080
+  mode: debug
+
+datasource:
+  mysql:
+    dns: root@123
+
+logs:
+  path: 123
