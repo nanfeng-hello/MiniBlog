@@ -22,6 +22,7 @@ func (h *UserHandler) Register(r *gin.RouterGroup) {
 		users.DELETE(":id", h.Delete)
 		users.PUT("", h.Update)
 		users.GET(":id", h.GetById)
+		users.GET("/list", h.GetUserList)
 	}
 }
 
@@ -108,4 +109,14 @@ func (h *UserHandler) GetById(c *gin.Context) {
 	}
 
 	response.Success(c, user)
+}
+
+// GetUserList
+func (h *UserHandler) GetUserList(c *gin.Context) {
+	users, err := h.svc.GetUserList(c.Request.Context())
+	if err != nil {
+		response.Fail(c, xerr.ErrInternal.Code, err.Error())
+	}
+
+	response.Success(c, &users)
 }

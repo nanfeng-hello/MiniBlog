@@ -15,3 +15,9 @@ type UpdateUserRequest struct {
 	Password *string   `json:"password" binding:"min=6,max=20"`
 	Nickname *string   `json:"nickname" binding:"min=1,max=20"`
 }
+
+type UserPageQuery struct {
+	Page     uint    `json:"page" binding:"required,page"`
+	Size     uint    `json:"size" binding:"required,size"`
+	Nickname *string `json:"nickname,omitempty" binding:"nickname"`
+}

@@ -82,3 +82,7 @@ func ToMap(req *request.UpdateUserRequest) *map[string]interface{} {
 func (svc *UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
 	return svc.repo.GetById(ctx, id)
 }
+
+func (svc *UserService) GetUserList(ctx context.Context) (*[]model.User, error) {
+	return svc.repo.GetUserList(ctx)
+}

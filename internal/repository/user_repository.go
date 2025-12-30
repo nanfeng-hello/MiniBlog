@@ -15,6 +15,7 @@ type IUserRepository interface {
 	Delete(ctx context.Context, id uuid.UUID) error
 	Update(ctx context.Context, id uuid.UUID, user_map *map[string]interface{}) error
 	GetById(ctx context.Context, id uuid.UUID) (*model.User, error)
+	GetUserList(ctx context.Context) (*[]model.User, error)
 }
 
 type UserRepository struct {
@@ -78,4 +79,14 @@ func (repo *UserRepository) GetById(ctx context.Context, id uuid.UUID) (*model.U
 	}
 
 	return &user, nil
+}
+
+// GetUserList
+func (repo *UserRepository) GetUserList(ctx context.Context) (*[]model.User, error) {
+	users, err := gorm.G[model.User](repo.db).Find(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &users, nil
 }
