@@ -23,10 +23,10 @@ type DataSource struct {
 
 type Mysql struct {
 	Host     string `mapstructure:"host" json:"host"`
-	Port     int    `mapstructure:"port" json:"port"`
+	Port     string `mapstructure:"port" json:"port"`
 	User     string `mapstructure:"user" json:"user"`
 	Password string `mapstructure:"password" json:"password"`
-	DBName   string `mapstructure:"db_name" json:"db_name"`
+	DBName   string `mapstructure:"db-name" json:"db_name"`
 }
 
 var Cfg = &Configuration{}
@@ -48,6 +48,8 @@ func Init() {
 	if err := v.Unmarshal(&Cfg); err != nil {
 		panic("配置映射失败")
 	}
+
+	fmt.Println(Cfg)
 
 	// 启动看门狗，进行热加载
 	v.WatchConfig()
