@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/nanfeng/mini-blog/internal/pkg/request"
 	"github.com/nanfeng/mini-blog/internal/pkg/response"
 	"github.com/nanfeng/mini-blog/internal/pkg/xerr"
@@ -20,6 +21,7 @@ func (h *UserHandler) Register(r *gin.RouterGroup) {
 		users.POST("", h.Create)
 		users.DELETE(":id", h.Delete)
 		users.PUT("", h.Update)
+		users.GET(":id", h.GetById)
 	}
 }
 
@@ -65,9 +67,9 @@ func (h *UserHandler) Delete(c *gin.Context) {
 		response.Fail(c, xerr.ErrInvalidParams.Code, err.Error())
 		return
 	}
-
+	id, _ := uuid.Parse(req.ID)
 	// 2.调用 service 层
-	if err := h.svc.Delete(c, req.ID); err != nil {
+	if err := h.svc.Delete(c, id); err != nil {
 		response.Fail(c, xerr.ErrInternal.Code, err.Error())
 		return
 	}
@@ -89,4 +91,21 @@ func (h *UserHandler) Update(c *gin.Context) {
 	}
 
 	response.Success(c, nil)
+}
+
+// GetById
+func (h *UserHandler) GetById(c *gin.Context) {
+	var req request.ByIdRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+	id, _ := uuid.Parse(req.ID)
+	user, err := h.svc.GetById(c.Request.Context(), id)
+	if err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	response.Success(c, user)
 }

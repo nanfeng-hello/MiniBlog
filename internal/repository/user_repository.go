@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	"github.com/nanfeng/mini-blog/internal/model"
@@ -11,8 +12,9 @@ import (
 
 type IUserRepository interface {
 	Create(ctx context.Context, user *model.User) (uuid.UUID, error)
-	Delete(ctx context.Context, id string) error
+	Delete(ctx context.Context, id uuid.UUID) error
 	Update(ctx context.Context, id uuid.UUID, user_map *map[string]interface{}) error
+	GetById(ctx context.Context, id uuid.UUID) (*model.User, error)
 }
 
 type UserRepository struct {
@@ -36,7 +38,7 @@ func (repo *UserRepository) Create(ctx context.Context, user *model.User) (uuid.
 }
 
 // Delete 删除用户
-func (repo *UserRepository) Delete(ctx context.Context, id string) error {
+func (repo *UserRepository) Delete(ctx context.Context, id uuid.UUID) error {
 	// 执行数据库操作
 	rows, err := gorm.G[model.User](repo.db).Where("id = ?", id).Delete(ctx)
 	if err != nil {
@@ -63,4 +65,17 @@ func (repo *UserRepository) Update(ctx context.Context, id uuid.UUID, user_map *
 	}
 
 	return nil
+}
+
+// GetById
+func (repo *UserRepository) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	user, err := gorm.G[model.User](repo.db).Where("id = ?", id).First(ctx)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, xerr.ErrUserNotFount
+		}
+		return nil, err
+	}
+
+	return &user, nil
 }

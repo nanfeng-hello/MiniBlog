@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/nanfeng/mini-blog/internal/pkg/xerr"
 )
 
 type Response struct {
@@ -28,6 +29,13 @@ func Success(c *gin.Context, data interface{}, msg ...string) {
 func Fail(c *gin.Context, code int, msg string) {
 	c.JSON(http.StatusOK, Response{
 		Code: code,
+		Msg:  msg,
+	})
+}
+
+func BadRequest(c *gin.Context, msg string) {
+	c.JSON(http.StatusBadRequest, Response{
+		Code: xerr.ErrInvalidParams.Code,
 		Msg:  msg,
 	})
 }

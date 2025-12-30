@@ -52,7 +52,7 @@ func (svc *UserService) Create(ctx context.Context, req *request.CreateUserReque
 }
 
 // Delete
-func (svc *UserService) Delete(ctx context.Context, id string) error {
+func (svc *UserService) Delete(ctx context.Context, id uuid.UUID) error {
 	return svc.repo.Delete(ctx, id)
 }
 
@@ -77,4 +77,8 @@ func ToMap(req *request.UpdateUserRequest) *map[string]interface{} {
 	}
 
 	return &user_map
+}
+
+func (svc *UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
+	return svc.repo.GetById(ctx, id)
 }
