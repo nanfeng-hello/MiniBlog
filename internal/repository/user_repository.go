@@ -12,6 +12,7 @@ import (
 type IUserRepository interface {
 	Create(ctx context.Context, user *model.User) (uuid.UUID, error)
 	Delete(ctx context.Context, id string) error
+	Update(ctx context.Context, id uuid.UUID, user_map *map[string]interface{}) error
 }
 
 type UserRepository struct {
@@ -43,6 +44,21 @@ func (repo *UserRepository) Delete(ctx context.Context, id string) error {
 	}
 
 	if rows == 0 {
+		return xerr.ErrUserNotFount
+	}
+
+	return nil
+}
+
+// Update 更新用户
+func (repo *UserRepository) Update(ctx context.Context, id uuid.UUID, user_map *map[string]interface{}) error {
+	// 使用原生 GORM 的 Updates 方法,支持 map[string]interface{}
+	result := repo.db.WithContext(ctx).Model(&model.User{}).Where("id = ?", id).Updates(user_map)
+	if result.Error != nil {
+		return xerr.ErrInternal
+	}
+
+	if result.RowsAffected == 0 {
 		return xerr.ErrUserNotFount
 	}
 

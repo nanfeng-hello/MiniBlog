@@ -19,6 +19,7 @@ func (h *UserHandler) Register(r *gin.RouterGroup) {
 	{
 		users.POST("", h.Create)
 		users.DELETE(":id", h.Delete)
+		users.PUT("", h.Update)
 	}
 }
 
@@ -72,5 +73,20 @@ func (h *UserHandler) Delete(c *gin.Context) {
 	}
 
 	// 3.返回成功信息
+	response.Success(c, nil)
+}
+
+func (h *UserHandler) Update(c *gin.Context) {
+	var req request.UpdateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.Fail(c, xerr.ErrInvalidParams.Code, err.Error())
+		return
+	}
+
+	if err := h.svc.Update(c.Request.Context(), &req); err != nil {
+		response.Fail(c, xerr.ErrUserNotFount.Code, err.Error())
+		return
+	}
+
 	response.Success(c, nil)
 }

@@ -55,3 +55,26 @@ func (svc *UserService) Create(ctx context.Context, req *request.CreateUserReque
 func (svc *UserService) Delete(ctx context.Context, id string) error {
 	return svc.repo.Delete(ctx, id)
 }
+
+// Update
+func (svc *UserService) Update(ctx context.Context, req *request.UpdateUserRequest) error {
+	user_map := ToMap(req)
+	return svc.repo.Update(ctx, req.ID, user_map)
+}
+
+func ToMap(req *request.UpdateUserRequest) *map[string]interface{} {
+	user_map := make(map[string]interface{})
+	if req.Nickname != nil {
+		user_map["nickname"] = req.Nickname
+	}
+
+	if req.Password != nil {
+		password, err := bcrypt.GenerateFromPassword([]byte(*req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			panic("密码加密失败")
+		}
+		user_map["password"] = password
+	}
+
+	return &user_map
+}
