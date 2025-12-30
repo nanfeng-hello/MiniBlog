@@ -18,6 +18,7 @@ func (h *UserHandler) Register(r *gin.RouterGroup) {
 	users := r.Group("/admin/users")
 	{
 		users.POST("", h.Create)
+		users.DELETE(":id", h.Delete)
 	}
 }
 
@@ -29,13 +30,13 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 
 func (h *UserHandler) Create(c *gin.Context) {
 	// 1.从请求中获取参数
-	var req *request.CreateUserRequest
+	var req request.CreateUserRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Fail(c, xerr.ErrInvalidParams.Code, xerr.ErrInternal.Msg)
 	}
 
 	// 2.调用 service 层
-	id, err := h.svc.Create(c, req)
+	id, err := h.svc.Create(c, &req)
 	if err != nil {
 		if errors.Is(err, xerr.ErrUsernameTaken) {
 			response.Fail(c,
@@ -53,4 +54,23 @@ func (h *UserHandler) Create(c *gin.Context) {
 		return
 	}
 	response.Success(c, id)
+}
+
+// Delete
+func (h *UserHandler) Delete(c *gin.Context) {
+	// 1.获取路径参数
+	var req request.ByIdRequest
+	if err := c.ShouldBindUri(&req); err != nil {
+		response.Fail(c, xerr.ErrInvalidParams.Code, err.Error())
+		return
+	}
+
+	// 2.调用 service 层
+	if err := h.svc.Delete(c, req.ID); err != nil {
+		response.Fail(c, xerr.ErrInternal.Code, err.Error())
+		return
+	}
+
+	// 3.返回成功信息
+	response.Success(c, nil)
 }

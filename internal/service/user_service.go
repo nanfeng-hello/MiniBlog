@@ -50,3 +50,8 @@ func (svc *UserService) Create(ctx context.Context, req *request.CreateUserReque
 
 	return id, nil
 }
+
+// Delete
+func (svc *UserService) Delete(ctx context.Context, id string) error {
+	return svc.repo.Delete(ctx, id)
+}

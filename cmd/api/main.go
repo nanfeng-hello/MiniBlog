@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/nanfeng/mini-blog/internal/config"
@@ -10,6 +13,7 @@ import (
 	"github.com/nanfeng/mini-blog/internal/service"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 func main() {
@@ -24,7 +28,15 @@ func main() {
 		config.Cfg.DataSource.Mysql.Port,
 		config.Cfg.DataSource.Mysql.DBName,
 	)
-	db, err := gorm.Open(mysql.Open(dns), &gorm.Config{})
+
+	newLogger := logger.New(log.New(os.Stdout, "\r\n", log.LstdFlags),
+		logger.Config{
+			SlowThreshold: time.Second,
+			LogLevel:      logger.Info,
+			Colorful:      true,
+		})
+
+	db, err := gorm.Open(mysql.Open(dns), &gorm.Config{Logger: newLogger})
 	if err != nil {
 		panic("数据库连接异常, err: " + err.Error())
 	}
