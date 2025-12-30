@@ -15,6 +15,7 @@ type Configuration struct {
 type Server struct {
 	Name string `mapstructure:"mini-blog" json:"name"`
 	Port int    `mapstructure:"port" json:"port"`
+	Mode string `mapstructure:"mode" json:"mode"`
 }
 
 type DataSource struct {
@@ -44,12 +45,10 @@ func Init() {
 		panic("读取配置文件失败")
 	}
 
-	//
+	// 配置映射
 	if err := v.Unmarshal(&Cfg); err != nil {
 		panic("配置映射失败")
 	}
-
-	fmt.Println(Cfg)
 
 	// 启动看门狗，进行热加载
 	v.WatchConfig()

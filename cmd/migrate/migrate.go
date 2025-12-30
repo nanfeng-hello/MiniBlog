@@ -3,16 +3,14 @@ package main
 import (
 	"fmt"
 
-	"github.com/gin-gonic/gin"
 	"github.com/nanfeng/mini-blog/internal/config"
-	"github.com/nanfeng/mini-blog/internal/handler/admin"
-	"github.com/nanfeng/mini-blog/internal/repository"
-	"github.com/nanfeng/mini-blog/internal/service"
+	"github.com/nanfeng/mini-blog/internal/model"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 func main() {
+
 	// 1.加载配置
 	config.Init()
 	// 2.实例
@@ -28,16 +26,8 @@ func main() {
 	if err != nil {
 		panic("数据库连接异常, err: " + err.Error())
 	}
-	user_repo := repository.NewUserRepository(db)
-	user_service := service.NewUserService(user_repo)
-	user_handler := admin.NewUserHandler(user_service)
 
-	r := gin.Default()
-	v1 := r.Group("/api/v1/")
-
-	gin.SetMode(config.Cfg.Server.Mode)
-
-	user_handler.Register(v1)
-
-	r.Run()
+	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.Post{})
+	db.AutoMigrate(&model.Comment{})
 }

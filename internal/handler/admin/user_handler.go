@@ -30,7 +30,7 @@ func NewUserHandler(svc *service.UserService) *UserHandler {
 func (h *UserHandler) Create(c *gin.Context) {
 	// 1.从请求中获取参数
 	var req *request.CreateUserRequest
-	if err := c.ShouldBindJSON(req); err != nil {
+	if err := c.ShouldBindJSON(&req); err != nil {
 		response.Fail(c, xerr.ErrInvalidParams.Code, xerr.ErrInternal.Msg)
 	}
 

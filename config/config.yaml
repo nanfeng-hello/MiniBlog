@@ -5,11 +5,11 @@ server:
 
 datasource:
   mysql:
-    host: localhost
-    port: 8080
+    host: 47.110.74.7
+    port: 3306
     user: root
     password: 123
-    db-name: mini-log
+    db-name: mini-blog
 
 logs:
-  path: 123
+  path: logs/
