@@ -23,6 +23,7 @@ func (h *UserHandler) Register(r *gin.RouterGroup) {
 		users.PUT("", h.Update)
 		users.GET(":id", h.GetById)
 		users.GET("/list", h.GetUserList)
+		users.POST("/page", h.PageQuery)
 	}
 }
 
@@ -119,4 +120,21 @@ func (h *UserHandler) GetUserList(c *gin.Context) {
 	}
 
 	response.Success(c, &users)
+}
+
+// PageQuery
+func (h *UserHandler) PageQuery(c *gin.Context) {
+	var page_query request.UserPageQuery
+	if err := c.ShouldBindJSON(&page_query); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	page, err := h.svc.PageQuery(c.Request.Context(), &page_query)
+	if err != nil {
+		response.Fail(c, xerr.ErrInternal.Code, err.Error())
+		return
+	}
+
+	response.Success(c, page)
 }

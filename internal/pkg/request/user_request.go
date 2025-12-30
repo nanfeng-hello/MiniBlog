@@ -17,7 +17,7 @@ type UpdateUserRequest struct {
 }
 
 type UserPageQuery struct {
-	Page     uint    `json:"page" binding:"required,page"`
-	Size     uint    `json:"size" binding:"required,size"`
-	Nickname *string `json:"nickname,omitempty" binding:"nickname"`
+	Page     int     `json:"page" binding:"required"`
+	Size     int     `json:"size" binding:"required"`
+	Nickname *string `json:"nickname,omitempty"`
 }

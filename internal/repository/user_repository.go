@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/nanfeng/mini-blog/internal/model"
+	"github.com/nanfeng/mini-blog/internal/pkg/request"
 	"github.com/nanfeng/mini-blog/internal/pkg/xerr"
 	"gorm.io/gorm"
 )
@@ -16,6 +17,7 @@ type IUserRepository interface {
 	Update(ctx context.Context, id uuid.UUID, user_map *map[string]interface{}) error
 	GetById(ctx context.Context, id uuid.UUID) (*model.User, error)
 	GetUserList(ctx context.Context) (*[]model.User, error)
+	PageQuery(ctx context.Context, page_query *request.UserPageQuery) (*[]model.User, error)
 }
 
 type UserRepository struct {
@@ -84,6 +86,25 @@ func (repo *UserRepository) GetById(ctx context.Context, id uuid.UUID) (*model.U
 // GetUserList
 func (repo *UserRepository) GetUserList(ctx context.Context) (*[]model.User, error) {
 	users, err := gorm.G[model.User](repo.db).Find(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return &users, nil
+}
+
+// PageQuery 分页查询
+func (repo *UserRepository) PageQuery(ctx context.Context, query_map *request.UserPageQuery) (*[]model.User, error) {
+	query := gorm.G[model.User](repo.db)
+
+	if query_map.Nickname != nil {
+		query.Where("nickname = ?", "%"+*query_map.Nickname+"%")
+	}
+
+	limit := query_map.Size
+	offset := (query_map.Page - 1) * limit
+
+	users, err := query.Offset(offset).Limit(limit).Find(ctx)
 	if err != nil {
 		return nil, err
 	}

@@ -79,10 +79,29 @@ func ToMap(req *request.UpdateUserRequest) *map[string]interface{} {
 	return &user_map
 }
 
+// GetById
 func (svc *UserService) GetById(ctx context.Context, id uuid.UUID) (*model.User, error) {
 	return svc.repo.GetById(ctx, id)
 }
 
+// GetUserList
 func (svc *UserService) GetUserList(ctx context.Context) (*[]model.User, error) {
 	return svc.repo.GetUserList(ctx)
+}
+
+// PageQuery
+func (svc *UserService) PageQuery(ctx context.Context, page_query *request.UserPageQuery) (*model.Page, error) {
+	users, err := svc.repo.PageQuery(ctx, page_query)
+	if err != nil {
+		return nil, err
+	}
+
+	page := model.Page{
+		Total:  len(*users),
+		Page:   page_query.Page,
+		Size:   page_query.Size,
+		Record: users,
+	}
+
+	return &page, nil
 }
