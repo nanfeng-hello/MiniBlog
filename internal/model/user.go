@@ -7,11 +7,11 @@ import (
 
 type User struct {
 	gorm.Model
-	Id       uuid.UUID `gorm:"column:id;type:varchar(32);primaryKey;" json:"id"`
+	ID       uuid.UUID `gorm:"column:id;type:varchar(36);primaryKey;" json:"id"`
 	Username string    `gorm:"column:username;type:varchar(30);index:idx_username"`
-	Password string    `gorm:"column:password;type:vahrchar(128);not null"`
+	Password string    `gorm:"column:password;type:varchar(128);not null"`
 	Nickname string    `gorm:"column:nickname"`
-	Posts    []Post    `gorm:"column:posts"`
+	Posts    []Post    `gorm:"foreignKey:AuthorId"`
 }
 
 func (user *User) TableName() string {
