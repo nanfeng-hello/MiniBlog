@@ -1,4 +1,4 @@
-package admin
+package user
 
 import (
 	"errors"
@@ -17,15 +17,12 @@ type UserHandler struct {
 }
 
 func (h *UserHandler) Register(r *gin.RouterGroup) {
-	users := r.Group("/admin/users", middleware.AdminAuthMiddleware())
+	users := r.Group("/users", middleware.AuthMiddleware())
 	{
-		users.POST("", h.Create)
-		users.DELETE("/:id", h.Delete)
+		users.DELETE(":id", h.Delete)
 		users.PUT("", h.Update)
 		users.GET("/:id", h.GetById)
-		users.GET("/list", h.GetUserList)
-		users.POST("/page", h.PageQuery)
-		users.GET("/", h.GetByUsername)
+		users.GET("", h.GetByUsername)
 	}
 }
 
@@ -142,7 +139,7 @@ func (h *UserHandler) PageQuery(c *gin.Context) {
 }
 
 type ByUsernameRequest struct {
-	Username string `form:"username" binding:"required,min=1,max=20"`
+	Username string `form:"username" binding:"required,min=1,max=30"`
 }
 
 // GetByUsername

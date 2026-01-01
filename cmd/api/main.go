@@ -46,7 +46,7 @@ func main() {
 	admin_handler := admin.NewUserHandler(user_service)
 
 	login_handler := user.NewLoginHandler(user_service)
-
+	user_handler := user.NewUserHandler(user_service)
 	r := gin.Default()
 	v1 := r.Group("/api/v1/")
 
@@ -54,6 +54,6 @@ func main() {
 
 	admin_handler.Register(v1)
 	login_handler.Register(v1)
-
+	user_handler.Register(v1)
 	r.Run()
 }
