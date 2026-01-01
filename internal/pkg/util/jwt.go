@@ -8,24 +8,21 @@ import (
 	"github.com/nanfeng/mini-blog/internal/config"
 )
 
-var cfg = &config.JwtConfig{}
-
-func GenerateToken(id *string) (string, error) {
+func GenerateToken(id string) (string, error) {
 
 	// 1.获取配置信息
-	config.Init()
 	cfg := config.Cfg.JwtConfig
 
 	// 1.构建 jwt.Register
 	claims := jwt.RegisteredClaims{
 		Issuer:    cfg.Iss,
-		Subject:   *id,
+		Subject:   id,
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(cfg.Exp) * time.Minute)),
 	}
 
 	// 2.进行base编码
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	// 3.使用密钥进行加密
 	return token.SignedString([]byte(cfg.Secret))
@@ -35,7 +32,7 @@ func GenerateToken(id *string) (string, error) {
 func ParseToken(tokenString string) (*jwt.RegisteredClaims, error) {
 	// 1.使用jwt中的方法进行解秘
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (any, error) {
-		return []byte(cfg.Secret), nil
+		return []byte(config.Cfg.JwtConfig.Secret), nil
 	})
 
 	if err != nil {

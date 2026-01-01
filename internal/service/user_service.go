@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nanfeng/mini-blog/internal/model"
 	"github.com/nanfeng/mini-blog/internal/pkg/request"
+	"github.com/nanfeng/mini-blog/internal/pkg/util"
 	"github.com/nanfeng/mini-blog/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -104,4 +105,32 @@ func (svc *UserService) PageQuery(ctx context.Context, page_query *request.UserP
 	}
 
 	return &page, nil
+}
+
+// GetByUsername
+func (svc *UserService) GetByUsername(ctx context.Context, username *string) (*model.User, error) {
+	return svc.repo.GetByUsername(ctx, username)
+}
+
+// Login
+func (svc *UserService) Login(ctx context.Context, req *request.LoginRequest) (*string, error) {
+	// 1.根据用户名查询用户信息
+	user, err := svc.GetByUsername(ctx, &req.Username)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2.校验密码是否正确
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.Password)); err != nil {
+		return nil, errors.New("password error")
+	}
+
+	// 3.生成token
+	token, err := util.GenerateToken(user.ID.String())
+	if err != nil {
+		return nil, errors.New("token生成失败")
+	}
+
+	// 4.返回token
+	return &token, nil
 }

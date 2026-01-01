@@ -18,6 +18,7 @@ type IUserRepository interface {
 	GetById(ctx context.Context, id uuid.UUID) (*model.User, error)
 	GetUserList(ctx context.Context) (*[]model.User, error)
 	PageQuery(ctx context.Context, page_query *request.UserPageQuery) (*[]model.User, error)
+	GetByUsername(ctx context.Context, username *string) (*model.User, error)
 }
 
 type UserRepository struct {
@@ -110,4 +111,17 @@ func (repo *UserRepository) PageQuery(ctx context.Context, query_map *request.Us
 	}
 
 	return &users, nil
+}
+
+// GetByUsername
+func (repo *UserRepository) GetByUsername(ctx context.Context, username *string) (*model.User, error) {
+	user, err := gorm.G[model.User](repo.db).Where("username = ?", username).First(ctx)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, xerr.ErrUserNotFount
+		}
+		return nil, xerr.ErrInternal
+	}
+
+	return &user, nil
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/nanfeng/mini-blog/internal/config"
 	"github.com/nanfeng/mini-blog/internal/handler/admin"
+	"github.com/nanfeng/mini-blog/internal/handler/user"
 	"github.com/nanfeng/mini-blog/internal/repository"
 	"github.com/nanfeng/mini-blog/internal/service"
 	"gorm.io/driver/mysql"
@@ -42,14 +43,17 @@ func main() {
 	}
 	user_repo := repository.NewUserRepository(db)
 	user_service := service.NewUserService(user_repo)
-	user_handler := admin.NewUserHandler(user_service)
+	admin_handler := admin.NewUserHandler(user_service)
+
+	login_handler := user.NewLoginHandler(user_service)
 
 	r := gin.Default()
 	v1 := r.Group("/api/v1/")
 
 	gin.SetMode(config.Cfg.Server.Mode)
 
-	user_handler.Register(v1)
+	admin_handler.Register(v1)
+	login_handler.Register(v1)
 
 	r.Run()
 }
