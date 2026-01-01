@@ -18,6 +18,7 @@ func (h *LoginHandler) Register(r *gin.RouterGroup) {
 	routers := r.Group("")
 	{
 		routers.POST("/login", h.Login)
+		routers.POST("/register", h.register)
 	}
 }
 
@@ -49,4 +50,21 @@ func (h *LoginHandler) Login(c *gin.Context) {
 	}
 	// 3.返回token给前端
 	response.Success(c, token)
+}
+
+// registej
+func (h *LoginHandler) register(c *gin.Context) {
+	var req request.CreateUserRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	id, err := h.svc.Create(c.Request.Context(), &req)
+	if err != nil {
+		response.BadRequest(c, err.Error())
+		return
+	}
+
+	response.Success(c, id)
 }
