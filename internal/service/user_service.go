@@ -8,6 +8,7 @@ import (
 	"github.com/nanfeng/mini-blog/internal/model"
 	"github.com/nanfeng/mini-blog/internal/pkg/request"
 	"github.com/nanfeng/mini-blog/internal/pkg/util"
+	"github.com/nanfeng/mini-blog/internal/pkg/xerr"
 	"github.com/nanfeng/mini-blog/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -25,6 +26,12 @@ func NewUserService(repo repository.IUserRepository) *UserService {
 
 // Create 创建用户
 func (svc *UserService) Create(ctx context.Context, req *request.CreateUserRequest) (uuid.UUID, error) {
+	// 校验username是否已经被使用
+	item, _ := svc.GetByUsername(ctx, &req.Username)
+	if item != nil {
+		return uuid.Nil, xerr.ErrUsernameTaken
+	}
+
 	// 1.将 request.CreateUserRequest 对象转换成 model.User对象
 	user := &model.User{}
 	user.Username = req.Username
