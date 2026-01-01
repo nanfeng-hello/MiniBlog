@@ -10,6 +10,7 @@ import (
 type Configuration struct {
 	Server     Server     `mapstructure:"server"`
 	DataSource DataSource `mapstructure:"datasource"`
+	JwtConfig  JwtConfig  `mapstructure:"jwt"`
 }
 
 type Server struct {
@@ -28,6 +29,13 @@ type Mysql struct {
 	User     string `mapstructure:"user" json:"user"`
 	Password string `mapstructure:"password" json:"password"`
 	DBName   string `mapstructure:"db-name" json:"db_name"`
+}
+
+type JwtConfig struct {
+	Secret string `mapstructure:"secret" json:"secret"`
+	Sub    string `mapstructure:"sub" json:"sub"`
+	Iss    string `mapstructure:"iss" json:"iss"`
+	Exp    int    `mapstructure:"exp" json:"exp"`
 }
 
 var Cfg = &Configuration{}

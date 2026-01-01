@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/nanfeng/mini-blog/internal/middleware"
 	"github.com/nanfeng/mini-blog/internal/pkg/request"
 	"github.com/nanfeng/mini-blog/internal/pkg/response"
 	"github.com/nanfeng/mini-blog/internal/pkg/xerr"
@@ -16,7 +17,7 @@ type UserHandler struct {
 }
 
 func (h *UserHandler) Register(r *gin.RouterGroup) {
-	users := r.Group("/admin/users")
+	users := r.Group("/admin/users", middleware.AuthMiddleware())
 	{
 		users.POST("", h.Create)
 		users.DELETE(":id", h.Delete)

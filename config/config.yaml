@@ -13,3 +13,10 @@ datasource:
 
 logs:
   path: logs/
+
+
+jwt:
+  secret: github.com/nanfeng.dev/tentcoo/2025.12.28
+  iss: github.com/nanfeng.dev
+  exp: 3600
+  
