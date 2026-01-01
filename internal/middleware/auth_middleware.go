@@ -31,6 +31,8 @@ func AuthMiddleware() gin.HandlerFunc {
 		claims, err := util.ParseToken(parts[1])
 		if err != nil {
 			response.BadRequest(c, err.Error())
+			c.Abort()
+			return
 		}
 
 		// 4.将用户id放入 context 中
@@ -62,9 +64,18 @@ func AdminAuthMiddleware() gin.HandlerFunc {
 		claims, err := util.ParseToken(parts[1])
 		if err != nil {
 			response.BadRequest(c, err.Error())
+			c.Abort()
+			return
 		}
 
-		// 4.将用户id放入 context 中
+		// 4.判断该用户是否是管理员
+		if claims.ID != "019b7944-b367-73df-8a1e-2658208db830" {
+			response.BadRequest(c, "权限不足, 不是管理员用户")
+			c.Abort()
+			return
+		}
+
+		// 5.将用户id放入 context 中
 		c.Set("user_id", claims.Subject)
 		c.Next()
 	}
